@@ -26,6 +26,9 @@ namespace HelloGame
             ballPostion = new Vector2(GraphicsDevice.Viewport.Width/2,GraphicsDevice.Viewport.Height/2);
             System.Random random = new System.Random();
             ballVelocity = new Vector2((float)random.NextDouble(), (float)random.NextDouble());
+            ballVelocity.Normalize();
+            ballVelocity *= 100;
+
             base.Initialize();
         }
 
@@ -34,6 +37,7 @@ namespace HelloGame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            ballTexture = Content.Load<Texture2D>("ball");
         }
 
         protected override void Update(GameTime gameTime)
@@ -42,7 +46,16 @@ namespace HelloGame
                 Exit();
 
             // TODO: Add your update logic here
+            ballPostion += ballVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            if(ballPostion.X < GraphicsDevice.Viewport.X || ballPostion.X > GraphicsDevice.Viewport.Width - 64)
+            {
+                ballVelocity.X *= -1;
+            }
+            if(ballPostion.Y < GraphicsDevice.Viewport.Y || ballPostion.Y > GraphicsDevice.Viewport.Height - 64)
+            {
+                ballVelocity.Y *= -1;
+            }
             base.Update(gameTime);
         }
 
@@ -51,6 +64,9 @@ namespace HelloGame
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(ballTexture, ballPostion, Color.White);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
